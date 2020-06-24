@@ -116,11 +116,28 @@
     </div>
 
     <button type="button" class="btn btn-primary btn-lg btn-block" id="startBtn">Начали!</button>
+
+    <div class="card" id="trainingPane" style="display:none">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><span class="col-sm-3">Ход: </span><span class="col-sm-2" id="turn"></span></li>
+            <li class="list-group-item"><span class="col-sm-3">Струна: </span><span class="col-sm-2" id="string"></span></li>
+            <li class="list-group-item"><span class="col-sm-3">Ступень: </span><span class="col-sm-2" id="step"></span></li>
+            <li class="list-group-item">
+                <div class="collapse" id="collapseHint">
+                    <span class="col-sm-3">Лад: </span><span class="col-sm-2" id="fret"></span>
+                </div>
+                <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseHint" aria-expanded="false" aria-controls="collapseHint">
+                    Видеть лад
+                </button>
+            </li>
+        </ul>
+    </div>
 </form>
 
 @section Scripts{
     <script>var running = false;
         var $btn = $('#startBtn');
+        var $trainingPane = $('#trainingPane');
         var $instr = $("input[name='instrument']")
         var $key = $("select[name='key']")
         var $steps = $("input[name='steps']")
@@ -133,6 +150,7 @@
                 $btn.text('стоп');
                 $btn.addClass('btn-secondary');
                 $btn.removeClass('btn-primary');
+                $trainingPane.show();
 
                 var instrParts = $instr.filter(':checked').val().split('_');
 
@@ -150,7 +168,7 @@
                 var tempo = parseInt($tempo.val());
 
                 console.log(strings, frets, key, tonic, isMinor, steps, tempo);
-                    
+
                 var positions = [];
                 strings.forEach(function (s, i) {
                     offset = 0;
@@ -183,11 +201,29 @@
 
                 console.log(positions);
 
-                timer = setInterval(function () {
-                    console.log('triggered');
-                }, 60 * 1000 / tempo);
+                var turn = 0;
+                var worker = function () {
+                    turn++;
+                    $('#turn').text(turn);
+
+                    var i = Math.floor(Math.random() * positions.length);
+                    var p = positions[i];
+                    //console.log(turn, i, p);
+
+                    var stringText = p.stringNumber + ' (' + p.stringNote + ')';
+                    if (p.fret >= 12) {
+                        stringText += ', после 12 лада';
+                    }
+                    $('#string').text(stringText);
+                    $('#step').text(p.step);
+                    $('#fret').text(p.fret);
+                };
+
+                timer = setInterval(worker, 60 * 1000 / tempo);
+                worker();
             } else {
                 clearInterval(timer);
+                $trainingPane.hide();
                 $btn.text('Начали!');
                 $btn.addClass('btn-primary');
                 $btn.removeClass('btn-secondary');
