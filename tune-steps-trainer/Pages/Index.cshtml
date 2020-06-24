@@ -110,7 +110,7 @@
     <h2>Скорость</h2>
     <div class="form-group row">
         <div class="col-sm-2">
-            <input type="text" class="form-control" id="tempo" value="20">
+            <input type="text" class="form-control" id="tempo" value="10">
         </div>
         <label for="tempo" class="col-sm-10 col-form-label">нот в минуту</label>
     </div>
@@ -118,15 +118,17 @@
     <button type="button" class="btn btn-primary btn-lg btn-block" id="startBtn">Начали!</button>
 
     <div class="card" id="trainingPane" style="display:none">
+        <div class="card-header">
+            <span class="col-sm-3">Ход: </span><span class="col-sm-2" id="turn"></span>
+        </div>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item"><span class="col-sm-3">Ход: </span><span class="col-sm-2" id="turn"></span></li>
-            <li class="list-group-item"><span class="col-sm-3">Струна: </span><span class="col-sm-2" id="string"></span></li>
             <li class="list-group-item"><span class="col-sm-3">Ступень: </span><span class="col-sm-2" id="step"></span></li>
+            <li class="list-group-item"><span class="col-sm-3">Струна: </span><span class="col-sm-2" id="string"></span></li>
             <li class="list-group-item">
                 <div class="collapse" id="collapseHint">
                     <span class="col-sm-3">Лад: </span><span class="col-sm-2" id="fret"></span>
                 </div>
-                <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseHint" aria-expanded="false" aria-controls="collapseHint">
+                <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseHint" aria-expanded="false" aria-controls="collapseHint" data-toggle-secondary="Скрыть лад">
                     Видеть лад
                 </button>
             </li>
@@ -151,6 +153,23 @@
                 $btn.addClass('btn-secondary');
                 $btn.removeClass('btn-primary');
                 $trainingPane.show();
+
+                $('[data-toggle-secondary]').each(function () {
+                    var $toggle = $(this);
+                    var originalText = $toggle.text();
+                    var secondaryText = $toggle.data('toggle-secondary');
+                    var $target = $($toggle.data('target'));
+
+                    $target.on('show.bs.collapse hide.bs.collapse', function () {
+                        if ($toggle.text() == originalText) {
+                            $toggle.text(secondaryText);
+                        } else {
+                            $toggle.text(originalText);
+                        }
+                    });
+                });
+
+
 
                 var instrParts = $instr.filter(':checked').val().split('_');
 
@@ -187,7 +206,8 @@
                                 fret: fret,
                                 note: note,
                                 tonicOffset: offset,
-                                step: step
+                                step: step,
+                                stepName: getStepName(step)
                             });
                         }
 
@@ -210,12 +230,14 @@
                     var p = positions[i];
                     //console.log(turn, i, p);
 
-                    var stringText = p.stringNumber + ' (' + p.stringNote + ')';
-                    if (p.fret >= 12) {
-                        stringText += ', после 12 лада';
+                    var stringText = p.stringNumber;
+                    if (p.fret < 12) {
+                        stringText += ' &nbsp; ||||||||||||-x-x-x-x-';
+                    } else {
+                        stringText += ' &nbsp; x-x-x-x-x-||||||||||||';
                     }
-                    $('#string').text(stringText);
-                    $('#step').text(p.step);
+                    $('#string').html(stringText);
+                    $('#step').text(p.step + ' - ' + p.stepName);
                     $('#fret').text(p.fret);
                 };
 
@@ -301,6 +323,27 @@
                         return null;
                 }
 
+            }
+        }
+
+        function getStepName(step) {
+            switch (step) {
+                case 1:
+                    return 'тоника';
+                case 2:
+                    return 'вводный тон';
+                case 3:
+                    return 'медианта';
+                case 4:
+                    return 'субдоминанта';
+                case 5:
+                    return 'доминанта';
+                case 6:
+                    return 'субмедианта';
+                case 7:
+                    return 'вводный тон';
+                default:
+                    return null;
             }
         }</script>
 }
