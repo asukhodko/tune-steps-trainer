@@ -45,7 +45,7 @@
 
     <h2>Тональность</h2>
     <div class="form-group col-2">
-        <select class="form-control" id="key">
+        <select class="form-control" name="key">
             <option disabled>мажор</option>
             <option>C</option>
             <option>C#</option>
@@ -109,10 +109,10 @@
 
     <h2>Скорость</h2>
     <div class="form-group row">
-        <div class="col-sm-1">
+        <div class="col-sm-2">
             <input type="text" class="form-control" id="tempo" value="20">
         </div>
-        <label for="tempo" class="col-sm-11 col-form-label">нот в минуту</label>
+        <label for="tempo" class="col-sm-10 col-form-label">нот в минуту</label>
     </div>
 
     <button type="button" class="btn btn-primary btn-lg btn-block" id="startBtn">Начали!</button>
@@ -122,9 +122,10 @@
     <script>var running = false;
         var $btn = $('#startBtn');
         var $instr = $("input[name='instrument']")
-        var $key = $("input[name='key']")
+        var $key = $("select[name='key']")
         var $steps = $("input[name='steps']")
         var $tempo = $('#tempo');
+        var timer = null;
 
         $(document).on('click', '#startBtn', function () {
             running = !running
@@ -133,11 +134,137 @@
                 $btn.addClass('btn-secondary');
                 $btn.removeClass('btn-primary');
 
-                var strings
+                var instrParts = $instr.filter(':checked').val().split('_');
+
+                var strings = instrParts[0].split('').reverse();
+                var frets = parseInt(instrParts[1]);
+                var key = $key.val();
+                var tonic = key.toLowerCase();
+                var isMinor = false;
+                if (tonic.endsWith('m')) {
+                    isMinor = true;
+                    tonic = tonic.substr(0, tonic.length - 1);
+                }
+                var steps = [];
+                $steps.filter(':checked').each(function (a, b) { steps.push(parseInt(b.value)); });
+                var tempo = parseInt($tempo.val());
+
+                console.log(strings, frets, key, tonic, isMinor, steps, tempo);
+                    
+                var positions = [];
+                strings.forEach(function (s, i) {
+                    offset = 0;
+                    for (var note = tonic; note != s; note = nextNote(note)) {
+                        offset++;
+                    }
+                    note = s;
+                    console.log(note, offset);
+                    for (var fret = 0; fret <= frets; fret++) {
+                        var step = calcStep(offset, isMinor);
+
+                        if (step != null && steps.includes(step)) {
+                            positions.push({
+                                stringNumber: i + 1,
+                                stringNote: s,
+                                fret: fret,
+                                note: note,
+                                tonicOffset: offset,
+                                step: step
+                            });
+                        }
+
+                        note = nextNote(note);
+                        offset++;
+                        if (offset >= 12) {
+                            offset -= 12;
+                        }
+                    }
+                });
+
+                console.log(positions);
+
+                timer = setInterval(function () {
+                    console.log('triggered');
+                }, 60 * 1000 / tempo);
             } else {
+                clearInterval(timer);
                 $btn.text('Начали!');
                 $btn.addClass('btn-primary');
                 $btn.removeClass('btn-secondary');
             }
-        });</script>
+        });
+
+        function nextNote(note) {
+            switch (note) {
+                case 'a':
+                    return 'a#';
+                case 'a#':
+                    return 'b';
+                case 'b':
+                    return 'c';
+                case 'c':
+                    return 'c#';
+                case 'c#':
+                    return 'd';
+                case 'd':
+                    return 'd#';
+                case 'd#':
+                    return 'e';
+                case 'e':
+                    return 'f';
+                case 'f':
+                    return 'f#';
+                case 'f#':
+                    return 'g';
+                case 'g':
+                    return 'g#';
+                case 'g#':
+                    return 'a';
+                default:
+                    return null;
+            }
+        }
+
+        function calcStep(offset, isMinor) {
+            if (isMinor) {
+                switch (offset) {
+                    case 0:
+                        return 1;
+                    case 2:
+                        return 2;
+                    case 3:
+                        return 3;
+                    case 5:
+                        return 4;
+                    case 7:
+                        return 5;
+                    case 8:
+                        return 6;
+                    case 10:
+                        return 7;
+                    default:
+                        return null;
+                }
+            } else {
+                switch (offset) {
+                    case 0:
+                        return 1;
+                    case 2:
+                        return 2;
+                    case 4:
+                        return 3;
+                    case 5:
+                        return 4;
+                    case 7:
+                        return 5;
+                    case 9:
+                        return 6;
+                    case 11:
+                        return 7;
+                    default:
+                        return null;
+                }
+
+            }
+        }</script>
 }
