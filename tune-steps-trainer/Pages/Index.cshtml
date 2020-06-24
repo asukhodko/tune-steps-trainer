@@ -5,6 +5,139 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Тренажёр, поиск нот тональности на грифе</h1>
 </div>
+
+<form>
+    <h2>Интрумент</h2>
+    <div class="form-group">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument1" value="eadg_20" checked>
+            <label class="form-check-label" for="instrument1">
+                Бас, 4 струны eadg, 20 ладов
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument2" value="eadgbe_24">
+            <label class="form-check-label" for="instrument2">
+                Гитара, 6 струн eadgbe, 24 ладов
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument3" value="eadgbe_22">
+            <label class="form-check-label" for="instrument3">
+                Гитара, 6 струн eadgbe, 22 лада
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument4" value="eadgbe_20">
+            <label class="form-check-label" for="instrument4">
+                Гитара, 6 струн eadgbe, 20 ладов
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument5" value="gcea_18">
+            <label class="form-check-label" for="instrument5">
+                Укулеле тенор, 4 струны gcea, 18 ладов
+            </label>
+        </div>
+    </div>
+
+    <h2>Тональность</h2>
+    <div class="form-group col-2">
+        <select class="form-control" id="key">
+            <option disabled>мажор</option>
+            <option>C</option>
+            <option>C#</option>
+            <option>D</option>
+            <option>D#</option>
+            <option>E</option>
+            <option>F</option>
+            <option>F#</option>
+            <option>G</option>
+            <option>G#</option>
+            <option>A</option>
+            <option>A#</option>
+            <option>B</option>
+            <option disabled>минор</option>
+            <option>Cm</option>
+            <option>C#m</option>
+            <option>Dm</option>
+            <option>D#m</option>
+            <option>Em</option>
+            <option>Fm</option>
+            <option selected>F#m</option>
+            <option>Gm</option>
+            <option>G#m</option>
+            <option>Am</option>
+            <option>A#m</option>
+            <option>Bm</option>
+        </select>
+    </div>
+
+    <h2>Ступени</h2>
+    <div class="form-group">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step1" value="1" checked>
+            <label class="form-check-label" for="step1">тоника</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step5" value="5" checked>
+            <label class="form-check-label" for="step5">доминанта</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step4" value="4" checked>
+            <label class="form-check-label" for="step4">субдоминанта</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step3" value="3" checked>
+            <label class="form-check-label" for="step3">медианта</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step6" value="6" checked>
+            <label class="form-check-label" for="step6">субмедианта</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step2" value="2">
+            <label class="form-check-label" for="step2">вводный-2</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="steps" id="step7" value="7">
+            <label class="form-check-label" for="step7">вводный-7</label>
+        </div>
+    </div>
+
+    <h2>Скорость</h2>
+    <div class="form-group row">
+        <div class="col-sm-1">
+            <input type="text" class="form-control" id="tempo" value="20">
+        </div>
+        <label for="tempo" class="col-sm-11 col-form-label">нот в минуту</label>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-lg btn-block" id="startBtn">Начали!</button>
+</form>
+
+@section Scripts{
+    <script>var running = false;
+        var $btn = $('#startBtn');
+        var $instr = $("input[name='instrument']")
+        var $key = $("input[name='key']")
+        var $steps = $("input[name='steps']")
+        var $tempo = $('#tempo');
+
+        $(document).on('click', '#startBtn', function () {
+            running = !running
+            if (running) {
+                $btn.text('стоп');
+                $btn.addClass('btn-secondary');
+                $btn.removeClass('btn-primary');
+
+                var strings
+            } else {
+                $btn.text('Начали!');
+                $btn.addClass('btn-primary');
+                $btn.removeClass('btn-secondary');
+            }
+        });</script>
+}
