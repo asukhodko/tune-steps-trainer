@@ -12,32 +12,38 @@
     <h2>Интрумент</h2>
     <div class="form-group">
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="instrument" id="instrument1" value="eadg_20" checked>
+            <input class="form-check-input" type="radio" name="instrument" id="instrument1" value="eadg_20">
             <label class="form-check-label" for="instrument1">
                 Бас, 4 струны eadg, 20 ладов
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="instrument" id="instrument2" value="eadgbe_24">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument2" value="beadg_22">
             <label class="form-check-label" for="instrument2">
+                Бас, 5 струн beadg, 22 лада
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument3" value="eadgbe_24" checked>
+            <label class="form-check-label" for="instrument3">
                 Гитара, 6 струн eadgbe, 24 лада
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="instrument" id="instrument3" value="eadgbe_22">
-            <label class="form-check-label" for="instrument3">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument4" value="eadgbe_22">
+            <label class="form-check-label" for="instrument4">
                 Гитара, 6 струн eadgbe, 22 лада
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="instrument" id="instrument4" value="eadgbe_20">
-            <label class="form-check-label" for="instrument4">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument5" value="eadgbe_20">
+            <label class="form-check-label" for="instrument5">
                 Гитара, 6 струн eadgbe, 20 ладов
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="instrument" id="instrument5" value="gcea_18">
-            <label class="form-check-label" for="instrument5">
+            <input class="form-check-input" type="radio" name="instrument" id="instrument6" value="gcea_18">
+            <label class="form-check-label" for="instrument6">
                 Укулеле тенор, 4 струны gcea, 18 ладов
             </label>
         </div>
@@ -122,8 +128,8 @@
             <span class="col-sm-3">Ход: </span><span class="col-sm-2" id="turn"></span>
         </div>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item"><span class="col-sm-3">Ступень: </span><span class="col-sm-2" id="step"></span></li>
             <li class="list-group-item"><span class="col-sm-3">Струна: </span><span class="col-sm-2" id="string"></span></li>
+            <li class="list-group-item"><span class="col-sm-3">Ступень: </span><span class="col-sm-2" id="step"></span></li>
             <li class="list-group-item">
                 <div class="collapse" id="collapseHint">
                     <span class="col-sm-3">Лад: </span><span class="col-sm-2" id="fret"></span>
@@ -222,22 +228,30 @@
                 console.log(positions);
 
                 var turn = 0;
+                var lastRnd = -1;
                 var worker = function () {
                     turn++;
                     $('#turn').text(turn);
 
-                    var i = Math.floor(Math.random() * positions.length);
+                    var i = lastRnd;
+                    while (i == lastRnd) {
+                        i = Math.floor(Math.random() * positions.length);
+                        if (positions.length <= 1) {
+                            break;
+                        }
+                    }
+                    lastRnd = i;
                     var p = positions[i];
                     //console.log(turn, i, p);
 
                     var stringText = p.stringNumber;
-                    if (p.fret < 12) {
+                    if (p.fret <= 12) {
                         stringText += ' &nbsp; ||||||||||||-x-x-x-x-';
                     } else {
                         stringText += ' &nbsp; x-x-x-x-x-||||||||||||';
                     }
                     $('#string').html(stringText);
-                    $('#step').text(p.step + ' - ' + p.stepName);
+                    $('#step').text(p.stepName + '-' + toRomeNumber(p.step) + '-' + p.note);
                     $('#fret').text(p.fret);
                 };
 
@@ -342,6 +356,27 @@
                     return 'субмедианта';
                 case 7:
                     return 'вводный тон';
+                default:
+                    return null;
+            }
+        }
+
+        function toRomeNumber(n) {
+            switch (n) {
+                case 1:
+                    return 'I';
+                case 2:
+                    return 'II';
+                case 3:
+                    return 'III';
+                case 4:
+                    return 'IV';
+                case 5:
+                    return 'V';
+                case 6:
+                    return 'VI';
+                case 7:
+                    return 'VII';
                 default:
                     return null;
             }
